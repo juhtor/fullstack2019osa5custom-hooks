@@ -22,7 +22,9 @@ const useResource = (baseUrl) => {
   const create = (resource) => {
     setResources(resources.concat(resource))
   }
-
+  const remove = (id) => {
+    setResources(resources.filter(resource => resource.id !== id))
+  }
   const service = {
     token: null,
 
@@ -46,7 +48,10 @@ const useResource = (baseUrl) => {
 
     update: (id, newObject) => {
       const request = axios.put(`${baseUrl} /${id}`, newObject)
-      return request.then(response => response.data)
+      request.then(response => {
+        remove(id)
+        create(response.data)
+      })
     },
   }
 
@@ -76,10 +81,15 @@ const App = () => {
 
   const handlePersonSubmit = (event) => {
     event.preventDefault()
-    personService
-      .create({ name: name.value, number: number.value })
+    const idx = persons.map(person => person.name).indexOf(name.value)
+    if (idx > -1) {
+      const id = persons[idx].id
+      personService.update(id, { name: name.value, number: number.value })
+    } else {
+      personService
+        .create({ name: name.value, number: number.value })
+    }
   }
-  console.log('notes', notes)
   return (
     <div>
       <h2>notes</h2>
