@@ -25,6 +25,9 @@ const useResource = (baseUrl) => {
   const remove = (id) => {
     setResources(resources.filter(resource => resource.id !== id))
   }
+  const update = (id, resource) => {
+    setResources(resources.filter(resource => resource.id !== id).concat(resource))
+  }
   const service = {
     token: null,
 
@@ -47,10 +50,9 @@ const useResource = (baseUrl) => {
     },
 
     update: (id, newObject) => {
-      const request = axios.put(`${baseUrl} /${id}`, newObject)
+      const request = axios.put(`${baseUrl}/${id}`, newObject)
       request.then(response => {
-        remove(id)
-        create(response.data)
+        update(id, response.data)
       })
     },
   }
